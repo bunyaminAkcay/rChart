@@ -2,7 +2,7 @@
 
 The Liquidity Heatmap predicts potential liquidations at various price levels, a key factor in price action analysis. In many price action techniques, identifying areas of liquidity consolidation and gaps is essential for understanding market dynamics. rChart Liquidity Heatmap indicator achieves this by algorithmically analyzing price and volume history to highlight areas with potential liquidation activity.
 
-![alt text](https://github.com/bunyaminAkcay/rChart/blob/main/images/screenshot.png?raw=true)
+![alt text](https://github.com/bunyaminAkcay/rChart/blob/master/images/screenshot.png?raw=true)
 
 ## How it works?
 
