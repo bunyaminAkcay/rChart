@@ -1,0 +1,10 @@
+.vscode
+.cache
+models
+build
+classification/.env
+classification/__pycache__
+classification/data/*
+classification/test-data
+classification/old
+classification/results
