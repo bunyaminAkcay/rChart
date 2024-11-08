@@ -2,6 +2,10 @@
 
 rChart is a trading chart program that includes various indicators. It fetches candlestick data from the Binance API, processes the data, and draws the chart and indicators using the Raylib library. The liquidity heatmap indicator is an original and unique feature that estimates liquidity levels.
 
+## Controls
+
+You can navigate the chart using the mouse and zoom in or out with "+" and "-" keys on the touchpad.
+
 ## Liquidity Heatmap Indicator
 
 The Liquidity Heatmap predicts potential liquidations at various price levels, a key factor in price action analysis. In many price action techniques, identifying areas of liquidity consolidation and gaps is essential for understanding market dynamics. rChart Liquidity Heatmap indicator achieves this by algorithmically analyzing price and volume history to highlight areas with potential liquidation activity.
