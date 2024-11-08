@@ -1,4 +1,5 @@
 #include "../include/LiquidityHeatmap.hpp"
+#include "onnxruntime_cxx_api.h"
 #include <math.h>
 #include <iostream>
 #include <cstddef>
@@ -20,6 +21,7 @@ LiquidityHeatmap::LiquidityHeatmap(std::vector<Candlestick>& candlesticks, std::
     this->name = "Liquidity Heatmap";
     this->color = color;
     this->indicatorType = IndicatorType::heatmap;
+
 }
 
 std::vector<float> LiquidityHeatmap::softmax(const std::vector<float>& logits) {
@@ -128,19 +130,26 @@ void LiquidityHeatmap::compute(){
     const int compressDataSize = 98;
 
     
-    /*onnx*/
+    
 
-    Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "test");
+    #ifdef __linux__
+    #ifdef __x86_64__
 
-    // Create ONNX Runtime session options
-    Ort::SessionOptions session_options;
-    session_options.SetIntraOpNumThreads(1);
-    session_options.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_EXTENDED);
+    Ort::Session* sessionPointer;
 
-    // Load the ONNX model
-    Ort::Session session(env, modelPath.c_str(), session_options);
-
-    /*onnx*/
+    if (predictionEnabled) {
+        // Load the ONNX model
+        Ort::Env env(ORT_LOGGING_LEVEL_WARNING, "test");
+        // Create ONNX Runtime session options
+        Ort::SessionOptions session_options;
+        session_options.SetIntraOpNumThreads(1);
+        session_options.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_EXTENDED);
+        Ort::Session session(env, modelPath.c_str(), session_options);
+        sessionPointer = &session;
+    }
+    
+    #endif
+    #endif
     
     double totalVolume = 0;
 
@@ -213,10 +222,8 @@ void LiquidityHeatmap::compute(){
 
         if (predictionEnabled)
         {   
-            
             #ifdef __linux__
             #ifdef __x86_64__
-
             int closePriceIndex = (candlesticks[index].closePrice - rangeBottom)/boxSize;
 
             std::vector<float> dataForPrediction;
@@ -315,7 +322,7 @@ void LiquidityHeatmap::compute(){
                 
                 dataForPrediction.push_back(volatilityValues[index]/candlesticks[index].closePrice);
 
-                int prediction = predict(&session, dataForPrediction);
+                int prediction = predict(sessionPointer, dataForPrediction);
 
                 if (prediction == 0)
                 {
@@ -342,6 +349,7 @@ void LiquidityHeatmap::compute(){
             {
                 strategy.push_back(3);
             }
+            
             #else
                 printf("rChart Warn: Prediction with onnx model is only possible for x86 x64 now. You can install it and implement yourself.")
             #endif

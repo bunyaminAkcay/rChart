@@ -67,7 +67,9 @@ std::vector<Candlestick> API::getCandlestickData(std::string symbol, std::string
 
     long intervalValue = intervalStringToTimestamp(interval);
     
-    long date = milliseconds - long(fetchCount) * 1000 * intervalValue - 0*( long(fetchCount) * intervalValue * 1000);
+    // you can change the p value to fetch older data
+    int p = 0;
+    long date = milliseconds - long(fetchCount) * 1000 * intervalValue - p*( long(fetchCount) * intervalValue * 1000);
 
     for (int i = 0; i < fetchCount; i++)
     {
