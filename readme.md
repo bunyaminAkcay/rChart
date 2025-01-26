@@ -4,7 +4,7 @@ rChart is a trading chart program that includes various indicators. It fetches c
 
 ## Controls
 
-You can navigate the chart using the mouse and zoom in or out with "+" and "-" keys on the touchpad.
+You can navigate the chart using the mouse and zoom in or out with "+" and "-" keys on the numpad.
 
 ## Liquidity Heatmap Indicator
 
@@ -31,7 +31,7 @@ The cpp-httplib library is used to send HTTPS requests to the Binance API. For S
 sudo apt-get install libssl-dev cmake build-essential
 ```
 
-you have to install raylib-5.0 . Higher versions such as raylib-5.5 is not compitable. Check for installation: https://github.com/raysan5/raylib/releases
+you have to install raylib-5.0 . Higher versions such as raylib-5.5 is not compatible. Check for installation: https://github.com/raysan5/raylib/releases
 
 ## Build
 
