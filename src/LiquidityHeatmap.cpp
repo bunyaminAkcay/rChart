@@ -50,7 +50,7 @@ void LiquidityHeatmap::recompute(){
     liquidatedVolume.shrink_to_fit();
     marketVolume.clear();
     marketVolume.shrink_to_fit();
-
+    maxLiquidity = 0;
     compute();
 }
 

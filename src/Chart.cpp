@@ -113,7 +113,7 @@ void Chart::drawGUI(){
     float lossRatioValue = liquidityHeatmap->lossRatio;
     float* lossRatio = &lossRatioValue;
     
-    GuiSlider((Rectangle){ float(chartSizeX - sliderSizeX - space), float(top), float(sliderSizeX), float(sliderSizeY) }, "Loss Ratio", std::to_string(*lossRatio).c_str(), lossRatio, 0.97, 1.03);
+    GuiSlider((Rectangle){ float(chartSizeX - sliderSizeX - space), float(top), float(sliderSizeX), float(sliderSizeY) }, "Loss Ratio", std::to_string(*lossRatio).c_str(), lossRatio, 0.96, 1.00);
     top += sliderSizeY + space;
     
 
