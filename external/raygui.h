@@ -378,10 +378,44 @@
   #define RAYGUI_LOG(...)
 #endif
 
+// *** rChart fix ***
+// rChart using raylib-5.0 and probably this raygui version is not compitable perfectly.
+// so to fix it, TextToFloat function is copied from standalone part.
+static float TextToFloat(const char *text)
+{
+    float value = 0.0f;
+    float sign = 1.0f;  
+
+    if ((text[0] == '+') || (text[0] == '-'))
+    {
+        if (text[0] == '-') sign = -1.0f;
+        text++;
+    }
+
+    int i = 0;
+    for (; ((text[i] >= '0') && (text[i] <= '9')); i++) value = value*10.0f + (float)(text[i] - '0');
+
+    if (text[i++] != '.') value *= sign;
+    else
+    {
+        float divisor = 10.0f;
+        for (; ((text[i] >= '0') && (text[i] <= '9')); i++)
+        {
+            value += ((float)(text[i] - '0'))/divisor;
+            divisor = divisor*10.0f;
+        }
+    }
+
+    return value;
+}
+
+
+
 //----------------------------------------------------------------------------------
 // Types and Structures Definition
 // NOTE: Some types are required for RAYGUI_STANDALONE usage
 //----------------------------------------------------------------------------------
+
 #if defined(RAYGUI_STANDALONE)
     #ifndef __cplusplus
     // Boolean type

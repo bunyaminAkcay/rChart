@@ -6,7 +6,7 @@
 #include <vector>
 #include <limits>
 
-enum IndicatorType { line, histogram, heatmap, strategy };
+enum IndicatorType { line, histogram, liquidityheatmap, strategy, supportresistance };
 
 class Indicator
 {
@@ -16,6 +16,7 @@ class Indicator
         Color color;
         std::vector<double> outputData;
         IndicatorType indicatorType;
+        bool visibility = true;
 
         Indicator();
         virtual ~Indicator() {};

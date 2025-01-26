@@ -19,6 +19,7 @@ set(SOURCES
     src/ATR.cpp
     src/Volume.cpp
     src/LiquidityHeatmap.cpp
+    src/SupportResistance.cpp
 )
 
 set(HEADERS
@@ -35,9 +36,8 @@ set(HEADERS
     include/LiquidityHeatmap.hpp
     include/viridis.hpp
     include/DesiredStrategy.hpp
+    include/SupportResistance.hpp
 )
-
-include_directories(${CMAKE_SOURCE_DIR}/onnxruntime-linux-x64-1.19.2/include)
 
 # Add the main.cpp file
 add_executable(rChart ${SOURCES} ${HEADERS})

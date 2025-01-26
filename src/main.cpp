@@ -4,9 +4,10 @@
 #include "../include/Volume.hpp"
 #include "../include/LiquidityHeatmap.hpp"
 #include "../include/DesiredStrategy.hpp"
+#include "../include/SupportResistance.hpp"
+#include <raylib.h>
 #include <vector>
 #include <string>
-#include <iostream>
 
 int main() {
 
@@ -21,12 +22,11 @@ int main() {
     int windowWidth = 1440, windowHeight = 900;
     bool fullscreen = false;
 
-    //
     bool predictionEnabled = false;
 
     int windowConfig = fullscreen ? 0x00000002 : 0x00000000;
 
-    std::vector<Candlestick> candlestickData = api.getCandlestickData(parity, internal, 2);
+    std::vector<Candlestick> candlestickData = api.getCandlestickData(parity, internal, 5);
 
     //Volume indicator
     Volume volume(candlestickData, PURPLE);
@@ -52,44 +52,38 @@ int main() {
     LiquidityHeatmap liquidityHeatmap(  candlestickData,
                                         volume.outputData,
                                         atr.outputData,
-                                        2000, ORANGE,
-                                        predictionEnabled,
-                                        "../models/HistGradientBoostingClassifier.onnx");
+                                        2000,
+                                        ORANGE);
     liquidityHeatmap.compute();
+    
+
+    SupportResistance supportResitance(liquidityHeatmap.heatmap, liquidityHeatmap.rangeBottom, liquidityHeatmap.boxSize, RED);
+
+    supportResitance.compute();
 
     raylib::Window chartWindow = raylib::Window(windowWidth, windowHeight, "", windowConfig);
     
     //Chart is a class that draw candles, cursor and indicators.
     Chart chart(&chartWindow, title, candlestickData);
+    chart.liquidityHeatmap = &liquidityHeatmap;
+    chart.supportResistance = &supportResitance;
+    
 
     Indicator* atrRef = &atr;
     Indicator* volumeRef = &volume;
     Indicator* lhmRef = &liquidityHeatmap;
     Indicator* dsRef = &desiredStrategy;
-    
+    Indicator* srRef = &supportResitance;
+
     chart.insertIndicator(lhmRef);
+    chart.insertIndicator(srRef);
     chart.insertIndicator(atrRef);
     chart.insertIndicator(volumeRef);
     //chart.insertIndicator(dsRef);
 
     //We can save heatmap and desiredStrategy as csv so we can apply machine learning algorithms.
-    chart.saveHeatmapToCsv(desiredStrategy.outputData, &atr, "liquidityHeatmap.csv", false, false);    
-
-    //for prediction, needs a onnx model
-    if (predictionEnabled)
-    {
-        int total = 0, numberOfCorrect = 0;
-
-        for (int i = 0; i < desiredStrategy.outputData.size(); i++)
-        {
-            total++;
-            if (liquidityHeatmap.strategy[i] == desiredStrategy.outputData[i])
-            {
-                numberOfCorrect++;
-            }
-        }
-        std::cout << "rChart INFO: Accuracy: "<< numberOfCorrect << "/" << total << std::endl; 
-    }
+    //chart.saveHeatmapToCsv(desiredStrategy.outputData, &atr, "liquidityHeatmap.csv", false, false);    
+    chart.saveSupportResistanceToCsv(desiredStrategy.outputData, supportResitance.heatmap, "srHeatmap.csv");
 
     chart.run();
     return 0;

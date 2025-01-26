@@ -4,20 +4,12 @@
 #include "Indicator.hpp"
 #include "Candlestick.hpp"
 
-#ifdef __linux__
-#ifdef __x86_64__
-#include "../onnxruntime-linux-x64-1.19.2/include/onnxruntime_cxx_api.h"
-#endif
-#endif
-
-
 class LiquidityHeatmap : public Indicator
 {   
     private:
         std::vector<Candlestick>& candlesticks;
         std::vector<double>& volume;
         std::vector<double>& volatilityValues;
-        std::string modelPath;
         int resolution;
 
         const double rangeRatio = 1;
@@ -27,12 +19,6 @@ class LiquidityHeatmap : public Indicator
 
 
         double normalPdf(double x, double mean, double sd);
-
-#ifdef __linux__
-#ifdef __x86_64__
-        int predict(Ort::Session* session, std::vector<float>& input);
-#endif
-#endif
 
         std::vector<float> softmax(const std::vector<float>& logits);
         
@@ -52,10 +38,7 @@ class LiquidityHeatmap : public Indicator
         std::vector<double> liquidatedVolume;
         std::vector<double> marketVolume;
 
-        std::vector<double> strategy;
-        bool predictionEnabled;
-
-        LiquidityHeatmap(std::vector<Candlestick>& candlesticks, std::vector<double>& volume, std::vector<double>& volatilityValues, int resolution, raylib::Color color, bool predictionEnabled, std::string modelPath);
+        LiquidityHeatmap(std::vector<Candlestick>& candlesticks, std::vector<double>& volume, std::vector<double>& volatilityValues, int resolution, raylib::Color color);
         ~LiquidityHeatmap();
         void compute() override;
         void recompute();

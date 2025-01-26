@@ -1,3 +1,9 @@
+#include <cstdio>
+#include <raylib.h>
+#include <utility>
+#include <vector>
+#include <limits>
+
 #define RAYGUI_IMPLEMENTATION
 
 #include "../external/raygui.h"
@@ -59,7 +65,37 @@ void Chart::run(){
 }
 
 void Chart::drawGUI(){
+    
+    const float checkBoxesX = 15;
+    float checkBoxesY = 65;
+    const float checkBoxSize = 15;
+    const float checkBoxSpace = 5;
 
+
+    //checkboxs for visibility
+    for (int i = 0; i < indicators.size(); i++){
+        
+        bool visibilityValue = indicators[i]->visibility;
+        bool* visibility = &visibilityValue;
+        
+        GuiCheckBox((Rectangle){ checkBoxesX, checkBoxesY, checkBoxSize, checkBoxSize}, indicators[i]->name.c_str(), visibility);
+        checkBoxesY += checkBoxSize + checkBoxSpace;
+
+        if (*visibility != indicators[i]->visibility){
+            indicators[i]->visibility = *visibility;
+        }
+
+        if (indicators[i]->name == this->supportResistance->name && indicators[i]->visibility == true) {
+            this->liquidityHeatmap->visibility = false;
+        }
+        if (indicators[i]->name == this->liquidityHeatmap->name && indicators[i]->visibility == true) {
+            this->supportResistance->visibility = false;
+        }
+            
+
+    }
+
+    
 
     //Slider
     double space = 50;
@@ -87,6 +123,9 @@ void Chart::drawGUI(){
     GuiSlider((Rectangle){ float(chartSizeX - sliderSizeX - space), float(top), float(sliderSizeX), float(sliderSizeY) }, "Liquidity Density", std::to_string(*liquidityDensityCoefficient).c_str(), liquidityDensityCoefficient, 0.00000, 0.0005);
     top += sliderSizeY + space;
     
+    
+
+
     if (*volatilityMultiplier != liquidityHeatmap->volatilityMultiplier || *lossRatio != liquidityHeatmap->lossRatio || *liquidityDensityCoefficient != liquidityHeatmap->liquidityDensityCoefficient)
     {
         liquidityHeatmap->volatilityMultiplier = *volatilityMultiplier;
@@ -94,6 +133,8 @@ void Chart::drawGUI(){
         liquidityHeatmap->liquidityDensityCoefficient = *liquidityDensityCoefficient;
 
         liquidityHeatmap->recompute();
+        supportResistance->recompute();
+        
     }
     
 }
@@ -104,6 +145,12 @@ Chart::~Chart()
 }
 
 void Chart::drawCandlesticks(){
+
+    Color borderColor = LIGHTGRAY;
+
+    if (liquidityHeatmap->visibility == false && supportResistance->visibility == false) {
+        borderColor = BLACK;
+    }
 
     for (int i = 0; i < candlestickData.size(); i++)
     {
@@ -116,7 +163,7 @@ void Chart::drawCandlesticks(){
         int upperWickSize = int((candlestick.highPrice - std::max(candlestick.openPrice, candlestick.closePrice)) * zoomY);
         int lowerWickSize = int((std::min(candlestick.openPrice, candlestick.closePrice) - candlestick.lowPrice) * zoomY);
 
-        DrawRectangle(offsetX, offsetY, int(candleWidth), bodyHeight, LIGHTGRAY);
+        DrawRectangle(offsetX, offsetY, int(candleWidth), bodyHeight, borderColor);
         if (bodyHeight > 2 and int(candleWidth) > 2){
             DrawRectangle(offsetX+1, offsetY+1, int(candleWidth)-2, bodyHeight-2, BLUE);
         }
@@ -124,11 +171,11 @@ void Chart::drawCandlesticks(){
         int withOver2 = int(candleWidth/2);
 
         if (upperWickSize > 0){
-            DrawLine(offsetX + withOver2+1, offsetY - upperWickSize, offsetX + withOver2+1, offsetY - upperWickSize + upperWickSize, LIGHTGRAY);
+            DrawLine(offsetX + withOver2+1, offsetY - upperWickSize, offsetX + withOver2+1, offsetY - upperWickSize + upperWickSize, borderColor);
         }
         
         if (lowerWickSize > 0){
-            DrawLine(offsetX + withOver2+1, offsetY + bodyHeight, offsetX + withOver2+1 , offsetY + bodyHeight + lowerWickSize, LIGHTGRAY);
+            DrawLine(offsetX + withOver2+1, offsetY + bodyHeight, offsetX + withOver2+1 , offsetY + bodyHeight + lowerWickSize, borderColor);
         }
     }
 }
@@ -187,7 +234,7 @@ double Chart::getIndexFromX(int x){
 
 void Chart::insertIndicator(Indicator* indicator){
     indicators.push_back(indicator);
-    if (indicator->indicatorType == IndicatorType::heatmap)
+    if (indicator->indicatorType == IndicatorType::liquidityheatmap)
     {
         LiquidityHeatmap* liquidityHeatmap = static_cast<LiquidityHeatmap*>(indicator);
         this->liquidityHeatmap = liquidityHeatmap;
@@ -321,7 +368,6 @@ void Chart::drawHeatmapIndicator(std::vector<std::vector<double>> data, double b
             {
                 double low = -(bottomPrice + i * boxSize - centerPrice) * zoomY + chartSizeY * 0.5; 
                 double high = low - boxSize * zoomY;
-                
                 if (low > 0 && high < chartSizeY)
                 {
                     int size = int(low) - int(high);
@@ -353,8 +399,8 @@ void Chart::drawHeatmapIndicator(std::vector<std::vector<double>> data, double b
         }
     }
 
-
-    //paint left part of chart
+    
+    //paint right part of chart
 
     int remainingOffsetX = chartSizeX - chartOffsetX + (int(candleWidth) + candlestickSpace);
     int index = data.size() -1;
@@ -430,7 +476,10 @@ void Chart::drawIndicators(){
 
     for (int i = 0; i < indicators.size(); i++)
     {
-        
+        if (!indicators[i]->visibility) {
+            continue;
+        }
+
         if (IndicatorType::line == indicators[i]->indicatorType)
         {
             drawLineIndicator(indicators[i]->outputData, bottomHeight - lineIndicatorSize, bottomHeight, indicators[i]->color);
@@ -454,7 +503,7 @@ void Chart::drawIndicators(){
                 DrawText(std::to_string(indicators[i]->outputData[indexOnMouse]).c_str(), 20, bottomHeight + fontSize +  space, fontSize, indicators[i]->color);
             }
         }
-        else if(IndicatorType::heatmap == indicators[i]->indicatorType)
+        else if(IndicatorType::liquidityheatmap == indicators[i]->indicatorType)
         {
             Color color1 = ORANGE;
             Color color2 = RED;
@@ -463,12 +512,6 @@ void Chart::drawIndicators(){
             LiquidityHeatmap* liquidityHeatmap = static_cast<LiquidityHeatmap*>(indicators[i]);
             
             drawHeatmapIndicator(liquidityHeatmap->heatmap, liquidityHeatmap->rangeBottom, liquidityHeatmap->boxSize, liquidityHeatmap->maxLiquidity, liquidityHeatmap->color, true);
-            
-            if (liquidityHeatmap->predictionEnabled)
-            {   
-                drawStrategy(liquidityHeatmap->strategy, space + bottomHeight - strategySize, bottomHeight);
-                bottomHeight -= space + strategySize + space;
-            }
 
             draw2DataHistogramIndicator( liquidityHeatmap->marketVolume, liquidityHeatmap->liquidatedVolume, bottomHeight - histogramIndicatorSize, bottomHeight, color1, color2);
             bottomHeight -= histogramIndicatorSize + space;
@@ -483,6 +526,10 @@ void Chart::drawIndicators(){
 
 
         }
+        else if(IndicatorType::supportresistance == indicators[i]->indicatorType){
+            SupportResistance* supportResistance = static_cast<SupportResistance*>(indicators[i]);
+            drawHeatmapIndicator(supportResistance->heatmap, supportResistance->rangeBottom, supportResistance->boxSize, supportResistance->maxLiquidity, supportResistance->color, true);
+        }
         else if(IndicatorType::strategy == indicators[i]->indicatorType){
 
             drawStrategy(indicators[i]->outputData, space + bottomHeight - strategySize, bottomHeight);
@@ -494,6 +541,93 @@ void Chart::drawIndicators(){
     int fontSize = 24;
     DrawText(title.c_str(), 16 + 1, fontSize + 1, fontSize, BLACK);
     DrawText(title.c_str(), 16 - 1, fontSize - 1 , fontSize, WHITE);
+
+}
+void Chart::saveSupportResistanceToCsv(std::vector<double>& desiredStrategyOutput, std::vector<std::vector<double>>& heatmapRef, std::string fileName, int columnSize){
+    //csv:
+    // label , --- 8 support power ---, --- 8 support distance ---
+    // support and resistance are sorted from largest to smallest
+    const int srLevelCount = 8;
+
+    int liquidityHeatmapSize = heatmapRef.size();
+    int rangeSizeHalf = liquidityHeatmap->rangeSizeHalf;
+
+    std::cout << liquidityHeatmapSize << " " << rangeSizeHalf << std::endl;
+    try {
+        csvfile csv(fileName, ",");
+
+        //start from index 1000
+        //assume first 1000 candle does not reliable
+        for (int i = 1000; i < candlesticksSize; i++){
+            if (desiredStrategyOutput[i] == 3)// 3 == NoInfo
+                continue;
+
+            int output;
+            if (desiredStrategyOutput[i] == 0){
+                output = 1;
+            }
+            else if (desiredStrategyOutput[i] == 1){
+                output = -1;
+            }
+            else{
+                output = 0;
+            }
+
+            int closePriceIndex = (candlestickData[i].closePrice - liquidityHeatmap->rangeBottom)/liquidityHeatmap->boxSize;
+            
+            //close price can be so close to edge of the range.
+            if ((rangeSizeHalf + closePriceIndex < liquidityHeatmapSize && closePriceIndex - rangeSizeHalf > 0) == false) {
+                continue;
+            }
+            
+            csv << output;
+
+            // search max 8 value in column
+            // index, value paires
+            std::vector<std::pair<int, double>> maxValues;
+            
+            for(int lc = 0; lc < srLevelCount; lc++){
+                
+                double maxValue = std::numeric_limits<double>::lowest();
+                int maxValueIndex = 0;
+                int maxValueIndexP = 0;
+
+                for (int p = -rangeSizeHalf; p < rangeSizeHalf; p++) {
+
+                    int index = closePriceIndex + p;
+
+                    bool indexNotUsed = true;
+                    
+                    for (std::pair<int, double> pair : maxValues){
+                        if (pair.first == index){
+                            indexNotUsed = false;
+                            break;
+                        }
+                    }
+
+                    if (indexNotUsed == false) {
+                        continue;
+                    }
+
+                    if ( heatmapRef[i][index] > maxValue){
+                        maxValue = heatmapRef[i][index];
+                        maxValueIndex = index;
+                        maxValueIndexP = p;
+                    }
+                }
+                std::pair<int, double> pair(maxValueIndex, maxValue);
+                maxValues.push_back(pair);
+
+                csv << maxValueIndexP << pair.second;
+            }
+            csv << endrow;
+        }
+    }
+    catch (const std::exception& e)
+    {
+        std::cout << "Exception was thrown: " << e.what() << std::endl;
+        
+    }
 
 }
 

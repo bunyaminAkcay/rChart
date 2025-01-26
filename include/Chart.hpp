@@ -2,6 +2,7 @@
 #include "Candlestick.hpp"
 #include "Indicator.hpp"
 #include "LiquidityHeatmap.hpp"
+#include "SupportResistance.hpp"
 #include "ATR.hpp"
 #include <string>
 #include <vector>
@@ -26,7 +27,7 @@ class Chart
         double oneOverZoomSpeed = 1/zoomSpeed;
         Vector2 lastPressedLocation;
         std::vector<Indicator*> indicators;
-        LiquidityHeatmap* liquidityHeatmap;
+        
 
         void drawCandlesticks();
         void controller();
@@ -42,9 +43,12 @@ class Chart
         void drawIndicators();
 
     public:
+        LiquidityHeatmap* liquidityHeatmap;
+        SupportResistance* supportResistance;
         Chart(raylib::Window* chartWindow, std::string title, std::vector<Candlestick> candlestickData);
         ~Chart();
         void run();
         void insertIndicator(Indicator* indicator);
         void saveHeatmapToCsv(std::vector<double>& desiredStrategyOutput, ATR* atr, std::string fileName, bool compression=false, bool normalization=false);
+        void saveSupportResistanceToCsv(std::vector<double>& desiredStrategyOutput,  std::vector<std::vector<double>>& heatmapRef, std::string fileName, int columnSize = 16);
 };
