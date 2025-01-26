@@ -47,4 +47,3 @@ target_link_libraries(rChart raylib)
 
 find_package(OpenSSL REQUIRED)
 target_link_libraries(rChart OpenSSL::SSL OpenSSL::Crypto)
-target_link_libraries(rChart ${CMAKE_SOURCE_DIR}/onnxruntime-linux-x64-1.19.2/lib/libonnxruntime.so)
