@@ -29,9 +29,9 @@ class LiquidityHeatmap : public Indicator
         int rangeSizeHalf = 512;
         int normalization = false;
 
-        double volatilityMultiplier = 14;//17.85;//4.5;//18;
-        double lossRatio = 0.989;//0.9985;//0.9883;
-        double liquidityDensityCoefficient = 0.00005;//0.0002;//0.000115;
+        double volatilityMultiplier = 19;//3
+        double lossRatio = 0.995;//0.996
+        double liquidityDensityCoefficient = 0.000025;//0.000015
 
         std::vector<std::vector<double>> heatmap;
         
