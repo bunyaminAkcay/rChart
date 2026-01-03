@@ -49,6 +49,6 @@ class Chart
         ~Chart();
         void run();
         void insertIndicator(Indicator* indicator);
-        void saveHeatmapToCsv(std::vector<double>& desiredStrategyOutput, ATR* atr, std::string fileName, bool compression=false, bool normalization=false);
-        void saveSupportResistanceToCsv(std::vector<double>& desiredStrategyOutput,  std::vector<std::vector<double>>& heatmapRef, std::string fileName, int columnSize = 16);
+        void saveHeatmapToCsv(std::vector<double>& desiredStrategyOutput, Indicator* atr, std::string fileName);
+        void saveSupportResistanceToCsv(std::vector<std::vector<double>>& heatmapRef, std::string fileName, int columnSize = 16);
 };

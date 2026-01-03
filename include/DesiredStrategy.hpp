@@ -4,11 +4,13 @@
 
 #include "Indicator.hpp"
 #include "Candlestick.hpp"
+#include "Order.hpp"
 #include <vector>
+
 
 #include <iostream>
 
-enum Order { Buy, Sell, NoOrder, NoInfo};
+
 
 class DesiredStrategy : public Indicator
 {
@@ -87,7 +89,7 @@ void DesiredStrategy::compute(){
             }
         }
 
-        Order order;
+        OrderType order;
 
         if (buyPosition && !sellPosition)
         {

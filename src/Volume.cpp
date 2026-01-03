@@ -14,5 +14,7 @@ void Volume::compute() {
     for (int i = 0; i < candlesticks.size(); i++)
     {
         this->outputData.push_back(candlesticks[i].volume);
+        this->takerVolume.push_back(candlesticks[i].takerBuyBaseVolume);
+        this->nonTakerVolume.push_back(candlesticks[i].nonTakerVolume);
     }
 }

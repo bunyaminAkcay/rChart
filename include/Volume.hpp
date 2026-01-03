@@ -8,6 +8,8 @@ class Volume : public Indicator
     private:
         std::vector<Candlestick>& candlesticks;
     public:
+        std::vector<double> takerVolume;
+        std::vector<double> nonTakerVolume;
         Volume(std::vector<Candlestick>& candlesticks, raylib::Color color);
         ~Volume();
         void compute() override;

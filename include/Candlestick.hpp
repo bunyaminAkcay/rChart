@@ -11,6 +11,9 @@ struct Candlestick
     double volume;
     long long klineCloseTime;
     double quoteAssetVolume;
+    long long numberOfTrades;
+    double takerBuyBaseVolume;
+    double nonTakerVolume;
 };
 
 #endif

@@ -17,9 +17,12 @@ set(SOURCES
     src/API.cpp
     src/Indicator.cpp
     src/ATR.cpp
+    src/StandardDeviation.cpp
     src/Volume.cpp
     src/LiquidityHeatmap.cpp
     src/SupportResistance.cpp
+    src/BackTester.cpp
+    src/LiqChange.cpp
 )
 
 set(HEADERS
@@ -32,11 +35,16 @@ set(HEADERS
     include/Indicator.hpp
     include/API.hpp
     include/ATR.hpp
+    include/StandardDeviation.hpp
     include/Volume.hpp
     include/LiquidityHeatmap.hpp
     include/viridis.hpp
+    include/turboColormap.hpp
     include/DesiredStrategy.hpp
     include/SupportResistance.hpp
+    include/Order.hpp
+    include/BackTester.hpp
+    include/LiqChange.hpp
 )
 
 # Add the main.cpp file

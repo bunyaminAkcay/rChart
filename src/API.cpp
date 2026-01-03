@@ -2,6 +2,7 @@
 #include "../external/httplib.h"
 #include "../external/json.hpp"
 #include <iostream>
+#include <iterator>
 #include <string>
 #include <chrono>
 
@@ -97,7 +98,9 @@ std::vector<Candlestick> API::getCandlestickData(std::string symbol, std::string
             candlestick.volume = std::stod(trimDoubleQuote((*it)[5].dump()));
             candlestick.klineCloseTime = std::stoll((*it)[6].dump());
             candlestick.quoteAssetVolume = std::stod(trimDoubleQuote((*it)[7].dump()));
-            
+            candlestick.numberOfTrades = std::stoll((*it)[8].dump());
+            candlestick.takerBuyBaseVolume = std::stod(trimDoubleQuote((*it)[9].dump()));
+            candlestick.nonTakerVolume = candlestick.volume - candlestick.takerBuyBaseVolume;
             candlesticks.push_back(candlestick);
         }
     }
