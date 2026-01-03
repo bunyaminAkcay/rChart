@@ -18,12 +18,6 @@ Liquidation heatmap example and explanation by coinglass: https://www.coinglass.
 
 At any given time t, it is assumed that the total accumulated liquidity in the market can be modeled with a normal distribution. This model assumes that the variance of the normal distribution is correlated to a volatility indicator, while the amplitude of the distribution is correlated to the volume of limit order liquidity. At each moment t, some amount of liquidity is reduced by market orders, and the remaining liquidity is carried over to t+1, allowing it to accumulate in the market.
 
-## Support Resistance Indicator
-
-This indicator shows important resistance and support levels. Basically, it derivates liquidity heatmap indicator.
-
-![alt text](https://github.com/bunyaminAkcay/rChart/blob/master/images/screenshot2.png?raw=true)
-
 ## Requirements
 
 The cpp-httplib library is used to send HTTPS requests to the Binance API. For SSL support, the libssl and libcrypto libraries must be linked to the project. For more details, you can check the [cpp-httplib repository](https://github.com/yhirose/cpp-httplib).

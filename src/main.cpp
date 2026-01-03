@@ -76,8 +76,8 @@ int main() {
     chart.liquidityHeatmap = &liquidityHeatmap;
     chart.supportResistance = &supportResitance;
 
-    LiqChange liqChange(5, candlestickData, liquidityHeatmap.liqChangeValues, GRAY);
-    liqChange.compute();
+    //LiqChange liqChange(5, candlestickData, liquidityHeatmap.liqChangeValues, GRAY);
+    //liqChange.compute();
 
     Indicator* atrRef = &atr;
     Indicator* volumeRef = &volume;
@@ -85,14 +85,14 @@ int main() {
     //Indicator* dsRef = &desiredStrategy;
     Indicator* srRef = &supportResitance;
     
-    Indicator* liqChangeRef = &liqChange;
+    //Indicator* liqChangeRef = &liqChange;
 
     chart.insertIndicator(lhmRef);
     chart.insertIndicator(srRef);
     //chart.insertIndicator(atrRef);
     //chart.insertIndicator(volumeRef);
     //chart.insertIndicator(dsRef);
-    chart.insertIndicator(liqChangeRef);
+    //chart.insertIndicator(liqChangeRef);
 
     //We can save heatmap and desiredStrategy as csv so we can apply machine learning algorithms.
     //chart.saveHeatmapToCsv(desiredStrategy.outputData, &atr, "liquidityHeatmap.csv");    
